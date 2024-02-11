@@ -49,7 +49,10 @@ function CursorChat({
         <>
           <CursorSVG color="#000" />
 
-          <div className="absolute left-2 top-5 rounded-3xl bg-primary px-4 py-2 text-sm leading-relaxed">
+          <div
+            className="absolute left-2 top-5 rounded-3xl bg-primary px-4 py-2 text-sm leading-relaxed"
+            onKeyUp={(event) => event.stopPropagation()}
+          >
             {cursorState?.previousMessage && (
               <span>{cursorState.previousMessage}</span>
             )}
