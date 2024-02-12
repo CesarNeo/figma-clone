@@ -24,7 +24,11 @@ type MyPresence = {
   message?: string | null
 }
 
-function Live() {
+interface LiveProps {
+  canvasRef: React.RefObject<HTMLCanvasElement>
+}
+
+function Live({ canvasRef }: LiveProps) {
   const others = useOthers()
   const [{ cursor }, setMyPresence] = useMyPresence() as unknown as [
     MyPresence,
@@ -190,13 +194,14 @@ function Live() {
 
   return (
     <div
+      id="canvas"
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       onPointerUp={handlePointerUp}
       onPointerDown={handlePointerDown}
       className="flex min-h-screen w-full items-center justify-center text-center"
     >
-      <h1 className="text-2xl">Livesblocks Figma Clone</h1>
+      <canvas ref={canvasRef} />
 
       {reactions.map((reaction) => (
         <FlyingReaction
