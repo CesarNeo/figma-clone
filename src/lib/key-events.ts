@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto'
-
 import { fabric } from 'fabric'
 
 import { CustomFabricObject } from '@/types/type'
@@ -41,7 +39,7 @@ export const handlePaste = (
               enlivenedObj.set({
                 left: enlivenedObj.left || 0 + 20,
                 top: enlivenedObj.top || 0 + 20,
-                objectId: randomUUID(),
+                objectId: crypto.randomUUID(),
                 fill: '#aabbcc',
               } as CustomFabricObject<any>)
 

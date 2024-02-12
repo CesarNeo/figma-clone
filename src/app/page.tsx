@@ -7,6 +7,7 @@ import LeftSidebar from '@/components/left-sidebar'
 import Live from '@/components/live'
 import Navbar from '@/components/navbar'
 import RightSidebar from '@/components/right-sidebar'
+import { defaultNavElement } from '@/constants'
 import {
   handleCanvaseMouseMove,
   handleCanvasMouseDown,
@@ -16,6 +17,7 @@ import {
   initializeFabric,
   renderCanvas,
 } from '@/lib/canvas'
+import { handleDelete } from '@/lib/key-events'
 import { useMutation, useStorage } from '@/liveblocks.config'
 import { ActiveElement } from '@/types/type'
 
@@ -44,9 +46,42 @@ export default function Home() {
     const canvasObject = storage.get('canvasObjects')
     canvasObject.set(objectId, shapeData)
   }, [])
+  const deleteAllShapes = useMutation(({ storage }) => {
+    const canvasObjects = storage.get('canvasObjects')
+
+    if (!canvasObjects || canvasObjects.size === 0) return true
+
+    for (const [key, value] of canvasObjects.entries()) {
+      canvasObjects.delete(key)
+    }
+
+    return canvasObjects.size === 0
+  }, [])
+  const deleteShapeFromStorage = useMutation(
+    ({ storage }, objectId: string) => {
+      const canvasObjects = storage.get('canvasObjects')
+
+      canvasObjects.delete(objectId)
+    },
+    [],
+  )
 
   function handleActiveElement(element: ActiveElement) {
     setActiveElement(element)
+
+    switch (element?.value) {
+      case 'reset':
+        deleteAllShapes()
+        fabricRef.current?.clear()
+        setActiveElement(defaultNavElement)
+        break
+      case 'delete':
+        handleDelete(fabricRef.current as any, deleteShapeFromStorage)
+        setActiveElement(defaultNavElement)
+        break
+      default:
+        break
+    }
 
     selectedShapeRef.current = element?.value as string
   }
@@ -96,6 +131,13 @@ export default function Home() {
     window.addEventListener('resize', () => {
       handleResize({ fabricRef })
     })
+
+    return () => {
+      window.removeEventListener('resize', () => {
+        handleResize({ fabricRef })
+      })
+      canvas.dispose()
+    }
   }, [])
 
   useEffect(() => {
