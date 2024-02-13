@@ -48,7 +48,7 @@ export default function Home() {
   const fabricRef = useRef<fabric.Canvas>(null)
   const shapeRef = useRef<fabric.Object>(null)
   const activeObjectRef = useRef<fabric.Object>(null)
-  const selectedShapeRef = useRef<string>(null)
+  const selectedShapeRef = useRef<string | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const isDrawingRef = useRef(false)
   const isEditingRef = useRef(false)
@@ -69,7 +69,9 @@ export default function Home() {
 
     if (!canvasObjects || canvasObjects.size === 0) return true
 
-    for (const [key] of canvasObjects.entries()) {
+    const canvasObjectsEntries = canvasObjects.entries()
+
+    for (const [key] of Array.from(canvasObjectsEntries)) {
       canvasObjects.delete(key)
     }
 
@@ -109,11 +111,13 @@ export default function Home() {
         break
     }
 
-    selectedShapeRef.current = element?.value as string
+    selectedShapeRef.current = element?.value || null
   }
 
   useEffect(() => {
     const canvas = initializeFabric({ fabricRef, canvasRef })
+    const currentFabricRef = fabricRef.current
+
     canvas.on('mouse:down', (options) => {
       handleCanvasMouseDown({
         canvas,
@@ -177,7 +181,7 @@ export default function Home() {
     })
 
     window.addEventListener('resize', () => {
-      handleResize({ fabricRef })
+      handleResize({ canvas: currentFabricRef })
     })
 
     window.addEventListener('keydown', (event) => {
@@ -193,7 +197,7 @@ export default function Home() {
 
     return () => {
       window.removeEventListener('resize', () => {
-        handleResize({ fabricRef })
+        handleResize({ canvas: currentFabricRef })
       })
       canvas.dispose()
     }

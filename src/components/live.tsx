@@ -8,9 +8,8 @@ import {
   useBroadcastEvent,
   useEventListener,
   useMyPresence,
-  useOthers,
 } from '@/liveblocks.config'
-import { CursorMode, CursorState, Reaction, ReactionEvent } from '@/types/type'
+import { CursorMode, CursorState, Reaction } from '@/types/type'
 
 import Comments from './comments/comments'
 import CursorChat from './cursors/cursor-chat'
@@ -24,14 +23,6 @@ import {
   ContextMenuTrigger,
 } from './ui/context-menu'
 
-type MyPresence = {
-  cursor?: {
-    x: number
-    y: number
-  } | null
-  message?: string | null
-}
-
 interface LiveProps {
   canvasRef: React.RefObject<HTMLCanvasElement>
   undo: () => void
@@ -39,11 +30,7 @@ interface LiveProps {
 }
 
 function Live({ canvasRef, undo, redo }: LiveProps) {
-  const others = useOthers()
-  const [{ cursor }, setMyPresence] = useMyPresence() as unknown as [
-    MyPresence,
-    (presence: MyPresence) => void,
-  ]
+  const [{ cursor }, setMyPresence] = useMyPresence()
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,
   })
@@ -178,7 +165,7 @@ function Live({ canvasRef, undo, redo }: LiveProps) {
   }, 1000)
 
   useEventListener((eventData) => {
-    const event = eventData.event as ReactionEvent
+    const event = eventData.event
 
     setReactions((prevReactions) =>
       prevReactions.concat([
@@ -263,7 +250,7 @@ function Live({ canvasRef, undo, redo }: LiveProps) {
           <ReactionSelector setReaction={onReaction} />
         )}
 
-        <LiveCursors others={others} />
+        <LiveCursors />
 
         <Comments />
       </ContextMenuTrigger>
