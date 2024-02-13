@@ -17,11 +17,15 @@ import {
   initializeFabric,
   renderCanvas,
 } from '@/lib/canvas'
-import { handleDelete } from '@/lib/key-events'
-import { useMutation, useStorage } from '@/liveblocks.config'
+import { handleDelete, handleKeyDown } from '@/lib/key-events'
+import { handleImageUpload } from '@/lib/shapes'
+import { useMutation, useRedo, useStorage, useUndo } from '@/liveblocks.config'
 import { ActiveElement } from '@/types/type'
 
 export default function Home() {
+  const undo = useUndo()
+  const redo = useRedo()
+
   const [activeElement, setActiveElement] = useState<ActiveElement>({
     name: '',
     value: '',
@@ -32,7 +36,8 @@ export default function Home() {
   const fabricRef = useRef<fabric.Canvas>(null)
   const shapeRef = useRef<fabric.Object>(null)
   const activeObjectRef = useRef<fabric.Object>(null)
-  const selectedShapeRef = useRef<string>('rectangle')
+  const selectedShapeRef = useRef<string>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
   const isDrawing = useRef(false)
 
   const canvasObjects = useStorage((root) => root.canvasObjects)
@@ -51,7 +56,7 @@ export default function Home() {
 
     if (!canvasObjects || canvasObjects.size === 0) return true
 
-    for (const [key, value] of canvasObjects.entries()) {
+    for (const [key] of canvasObjects.entries()) {
       canvasObjects.delete(key)
     }
 
@@ -78,6 +83,14 @@ export default function Home() {
       case 'delete':
         handleDelete(fabricRef.current as any, deleteShapeFromStorage)
         setActiveElement(defaultNavElement)
+        break
+      case 'image':
+        imageInputRef.current?.click()
+        isDrawing.current = false
+
+        if (fabricRef.current) {
+          fabricRef.current.isDrawingMode = false
+        }
         break
       default:
         break
@@ -109,7 +122,7 @@ export default function Home() {
       })
     })
 
-    canvas.on('mouse:up', (options) => {
+    canvas.on('mouse:up', () => {
       handleCanvasMouseUp({
         canvas,
         isDrawing,
@@ -130,6 +143,17 @@ export default function Home() {
 
     window.addEventListener('resize', () => {
       handleResize({ fabricRef })
+    })
+
+    window.addEventListener('keydown', (event) => {
+      handleKeyDown({
+        e: event,
+        canvas: fabricRef.current,
+        undo,
+        redo,
+        syncShapeInStorage,
+        deleteShapeFromStorage,
+      })
     })
 
     return () => {
@@ -153,10 +177,25 @@ export default function Home() {
       <Navbar
         activeElement={activeElement}
         handleActiveElement={handleActiveElement}
+        imageInputRef={imageInputRef}
+        handleImageUpload={(event) => {
+          event.stopPropagation()
+
+          if (!event.target.files) return
+
+          const file = event.target.files[0]
+
+          handleImageUpload({
+            file,
+            canvas: fabricRef as any,
+            shapeRef,
+            syncShapeInStorage,
+          })
+        }}
       />
 
       <section className="flex h-full flex-row">
-        <LeftSidebar />
+        <LeftSidebar allShapes={Array.from(canvasObjects)} />
         <Live canvasRef={canvasRef} />
         <RightSidebar />
       </section>
