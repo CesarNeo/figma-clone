@@ -13,6 +13,8 @@ import {
   handleCanvasMouseDown,
   handleCanvasMouseUp,
   handleCanvasObjectModified,
+  handleCanvasObjectScaling,
+  handleCanvasSelectionCreated,
   handleResize,
   initializeFabric,
   renderCanvas,
@@ -20,7 +22,7 @@ import {
 import { handleDelete, handleKeyDown } from '@/lib/key-events'
 import { handleImageUpload } from '@/lib/shapes'
 import { useMutation, useRedo, useStorage, useUndo } from '@/liveblocks.config'
-import { ActiveElement } from '@/types/type'
+import { ActiveElement, Attributes } from '@/types/type'
 
 export default function Home() {
   const undo = useUndo()
@@ -31,6 +33,15 @@ export default function Home() {
     value: '',
     icon: '',
   })
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
+    width: '',
+    height: '',
+    fontSize: '',
+    fontFamily: '',
+    fontWeight: '',
+    fill: '#AABBCC',
+    stroke: '#AABBCC',
+  })
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fabricRef = useRef<fabric.Canvas>(null)
@@ -38,7 +49,8 @@ export default function Home() {
   const activeObjectRef = useRef<fabric.Object>(null)
   const selectedShapeRef = useRef<string>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
-  const isDrawing = useRef(false)
+  const isDrawingRef = useRef(false)
+  const isEditingRef = useRef(false)
 
   const canvasObjects = useStorage((root) => root.canvasObjects)
   const syncShapeInStorage = useMutation(({ storage }, object) => {
@@ -86,7 +98,7 @@ export default function Home() {
         break
       case 'image':
         imageInputRef.current?.click()
-        isDrawing.current = false
+        isDrawingRef.current = false
 
         if (fabricRef.current) {
           fabricRef.current.isDrawingMode = false
@@ -104,7 +116,7 @@ export default function Home() {
     canvas.on('mouse:down', (options) => {
       handleCanvasMouseDown({
         canvas,
-        isDrawing,
+        isDrawing: isDrawingRef,
         options,
         selectedShapeRef,
         shapeRef,
@@ -114,7 +126,7 @@ export default function Home() {
     canvas.on('mouse:move', (options) => {
       handleCanvaseMouseMove({
         canvas,
-        isDrawing,
+        isDrawing: isDrawingRef,
         options,
         selectedShapeRef,
         shapeRef,
@@ -125,7 +137,7 @@ export default function Home() {
     canvas.on('mouse:up', () => {
       handleCanvasMouseUp({
         canvas,
-        isDrawing,
+        isDrawing: isDrawingRef,
         selectedShapeRef,
         shapeRef,
         syncShapeInStorage,
@@ -138,6 +150,21 @@ export default function Home() {
       handleCanvasObjectModified({
         options,
         syncShapeInStorage,
+      })
+    })
+
+    canvas.on('selection:created', (options) => {
+      handleCanvasSelectionCreated({
+        options,
+        isEditingRef,
+        setElementAttributes,
+      })
+    })
+
+    canvas.on('object:scaling', (options) => {
+      handleCanvasObjectScaling({
+        options,
+        setElementAttributes,
       })
     })
 
@@ -197,7 +224,14 @@ export default function Home() {
       <section className="flex h-full flex-row">
         <LeftSidebar allShapes={Array.from(canvasObjects)} />
         <Live canvasRef={canvasRef} />
-        <RightSidebar />
+        <RightSidebar
+          elementAttributes={elementAttributes}
+          setElementAttributes={setElementAttributes}
+          fabricRef={fabricRef}
+          isEditingRef={isEditingRef}
+          activeObjectRef={activeObjectRef}
+          syncShapeInStorage={syncShapeInStorage}
+        />
       </section>
     </main>
   )
