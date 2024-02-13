@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+
 import { modifyShape } from '@/lib/shapes'
 import { RightSidebarProps } from '@/types/type'
 
@@ -14,6 +16,9 @@ function RightSidebar({
   setElementAttributes,
   syncShapeInStorage,
 }: RightSidebarProps) {
+  const colorInputRef = useRef<HTMLInputElement>(null)
+  const strokeInputRef = useRef<HTMLInputElement>(null)
+
   function handleInputChange(property: string, value: string) {
     if (!isEditingRef.current) isEditingRef.current = true
 
@@ -41,9 +46,26 @@ function RightSidebar({
         handleInputChange={handleInputChange}
         isEditingRef={isEditingRef}
       />
-      <Text />
-      <Color />
-      <Color />
+      <Text
+        fontFamily={elementAttributes.fontFamily}
+        fontSize={elementAttributes.fontSize}
+        fontWeight={elementAttributes.fontWeight}
+        handleInputChange={handleInputChange}
+      />
+      <Color
+        attributeType="fill"
+        placeholder="color"
+        inputRef={colorInputRef}
+        attribute={elementAttributes.fill}
+        handleInputChange={handleInputChange}
+      />
+      <Color
+        attributeType="stroke"
+        placeholder="stroke"
+        inputRef={strokeInputRef}
+        attribute={elementAttributes.stroke}
+        handleInputChange={handleInputChange}
+      />
       <Export />
     </section>
   )

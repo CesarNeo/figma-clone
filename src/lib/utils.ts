@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
+import JSpdf from 'jspdf'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -63,18 +64,18 @@ export const exportToPdf = () => {
   if (!canvas) return
 
   // use jspdf
-  // const doc = new jsPDF({
-  //   orientation: 'landscape',
-  //   unit: 'px',
-  //   format: [canvas.width, canvas.height],
-  // })
+  const doc = new JSpdf({
+    orientation: 'landscape',
+    unit: 'px',
+    format: [canvas.width, canvas.height],
+  })
 
   // get the canvas data url
   const data = canvas.toDataURL()
 
   // add the image to the pdf
-  // doc.addImage(data, 'PNG', 0, 0, canvas.width, canvas.height)
+  doc.addImage(data, 'PNG', 0, 0, canvas.width, canvas.height)
 
   // // download the pdf
-  // doc.save('canvas.pdf')
+  doc.save('canvas.pdf')
 }
