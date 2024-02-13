@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${workSans.variable} dark bg-background font-work-sans antialiased`}
+        className={`${workSans.variable} dark overflow-hidden bg-background font-work-sans antialiased`}
       >
         <Room>{children}</Room>
       </body>
