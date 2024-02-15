@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '../ui/select'
 
-const selectConfigs = [
+const SELECT_CONFIGS = [
   {
     property: 'fontFamily',
     placeholder: 'Choose a font',
@@ -39,12 +39,12 @@ const Text = ({
   fontWeight,
   handleInputChange,
 }: TextProps) => (
-  <div className="border-primary-grey-200 flex flex-col gap-3 border-b px-5 py-3">
+  <div className="border-secondary flex flex-col gap-3 border-b px-5 py-3">
     <h3 className="text-[10px] uppercase">Text</h3>
 
     <div className="flex flex-col gap-3">
       {RenderSelect({
-        config: selectConfigs[0],
+        config: SELECT_CONFIGS[0],
         fontSize,
         fontWeight,
         fontFamily,
@@ -52,7 +52,7 @@ const Text = ({
       })}
 
       <div className="flex gap-2">
-        {selectConfigs.slice(1).map((config) =>
+        {SELECT_CONFIGS.slice(1).map((config) =>
           RenderSelect({
             config,
             fontSize,
@@ -96,7 +96,7 @@ const RenderSelect = ({
           : fontWeight
     }
   >
-    <SelectTrigger className="no-ring border-primary-grey-200 w-full rounded-sm border">
+    <SelectTrigger>
       <SelectValue
         placeholder={
           config.property === 'fontFamily'
@@ -107,12 +107,11 @@ const RenderSelect = ({
         }
       />
     </SelectTrigger>
-    <SelectContent className="border-primary-grey-200 bg-primary-black text-primary-grey-300">
+    <SelectContent>
       {config.options.map((option) => (
         <SelectItem
           key={option.value}
           value={option.value}
-          className=" hover:bg-primary-green hover:text-primary-black"
         >
           {option.label}
         </SelectItem>
