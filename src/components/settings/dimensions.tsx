@@ -1,7 +1,7 @@
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 
-const dimensionsOptions = [
+const DIMENSIONS_OPTIONS = [
   { label: 'W', property: 'width' },
   { label: 'H', property: 'height' },
 ]
@@ -17,12 +17,12 @@ function Dimensions({ width, height, isEditingRef, handleInputChange }: Props) {
   return (
     <section className="border-primary-grey-200 flex flex-col border-b">
       <div className="flex flex-col gap-4 px-6 py-3">
-        {dimensionsOptions.map((item) => (
+        {DIMENSIONS_OPTIONS.map((item) => (
           <div
             key={item.label}
             className="flex flex-1 items-center gap-3 rounded-sm"
           >
-            <Label htmlFor={item.property} className="text-[10px] font-bold">
+            <Label htmlFor={item.property}>
               {item.label}
             </Label>
             <Input
@@ -30,7 +30,6 @@ function Dimensions({ width, height, isEditingRef, handleInputChange }: Props) {
               id={item.property}
               placeholder="100"
               value={item.property === 'width' ? width : height}
-              className="input-ring"
               min={10}
               onChange={(e) => handleInputChange(item.property, e.target.value)}
               onBlur={(e) => {
