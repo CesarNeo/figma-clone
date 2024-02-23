@@ -20,7 +20,7 @@ function ActiveUsers() {
           {currentUser && (
             <Avatar name="You" className="border-[3px] border-primary" />
           )}
-          {users.slice(0, 3).map(({ connectionId, info }) => {
+          {users.slice(0, 3).map(({ connectionId }) => {
             return (
               <Avatar
                 key={connectionId}

@@ -2,6 +2,7 @@ import { createClient, LiveMap } from '@liveblocks/client'
 import { createRoomContext } from '@liveblocks/react'
 
 import { env } from './env'
+import { FabricObjectProperties } from './types'
 import { ReactionEvent } from './types/type'
 
 const client = createClient({
@@ -21,9 +22,7 @@ export type Presence = {
 // LiveList, LiveMap, LiveObject instances, for which updates are
 // automatically persisted and synced to all connected clients.
 type Storage = {
-  // author: LiveObject<{ firstName: string, lastName: string }>,
-  // ...
-  canvasObjects: LiveMap<string, any>
+  canvasObjects: LiveMap<string, FabricObjectProperties>
 }
 
 // Optionally, UserMeta represents static/readonly metadata on each user, as
@@ -41,9 +40,10 @@ type RoomEvent = ReactionEvent
 // Optionally, when using Comments, ThreadMetadata represents metadata on
 // each thread. Can only contain booleans, strings, and numbers.
 export type ThreadMetadata = {
-  // resolved: boolean;
-  // quote: string;
-  // time: number;
+  resolved: boolean
+  zIndex: number
+  x: number
+  y: number
 }
 
 export const {
@@ -86,7 +86,7 @@ export const {
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(
   client,
   {
-    async resolveUsers({ userIds }) {
+    async resolveUsers() {
       // Used only for Comments. Return a list of user information retrieved
       // from `userIds`. This info is used in comments, mentions etc.
 
@@ -99,7 +99,7 @@ export const {
 
       return []
     },
-    async resolveMentionSuggestions({ text, roomId }) {
+    async resolveMentionSuggestions() {
       // Used only for Comments. Return a list of userIds that match `text`.
       // These userIds are used to create a mention list when typing in the
       // composer.

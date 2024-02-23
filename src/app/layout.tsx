@@ -3,6 +3,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Work_Sans as WorkSans } from 'next/font/google'
 
+import CanvasProvider from '@/context/canvas'
+
 import Room from './room'
 
 const workSans = WorkSans({
@@ -27,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${workSans.variable} dark overflow-hidden bg-background font-work-sans antialiased`}
       >
-        <Room>{children}</Room>
+        <Room>
+          <CanvasProvider>{children}</CanvasProvider>
+        </Room>
       </body>
     </html>
   )

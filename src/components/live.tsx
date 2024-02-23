@@ -3,6 +3,7 @@
 import { PointerEvent, useCallback, useEffect, useState } from 'react'
 
 import { shortcuts } from '@/constants'
+import useCanvas from '@/hooks/canvas'
 import useInterval from '@/hooks/useInterval'
 import {
   useBroadcastEvent,
@@ -23,13 +24,9 @@ import {
   ContextMenuTrigger,
 } from './ui/context-menu'
 
-interface LiveProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>
-  undo: () => void
-  redo: () => void
-}
+function Live() {
+  const { canvasRef, undo, redo } = useCanvas()
 
-function Live({ canvasRef, undo, redo }: LiveProps) {
   const [{ cursor }, setMyPresence] = useMyPresence()
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,

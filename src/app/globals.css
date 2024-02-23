@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 @import "@liveblocks/react-comments/styles.css";
- 
 
 @layer base {
   :root {
@@ -77,4 +76,3 @@
     @apply flex justify-between px-3 py-2 hover:bg-primary-foreground !important;
   }
 }
- 

@@ -9,17 +9,18 @@ export function Avatar({
   name,
   className,
 }: {
-  src: string
   name: string
   className?: string
 }) {
+  const randomAvatar = Math.floor(Math.random() * 30)
+
   return (
     <div
       className={cn(`${styles.avatar} relative h-9 w-9`, className)}
       data-tooltip={name}
     >
       <Image
-        src={`https://liveblocks.io/avatars/avatar-${Math.floor(Math.random() * 30)}.png`}
+        src={`https://liveblocks.io/avatars/avatar-${randomAvatar}.png`}
         fill
         className={styles.avatar_picture}
         alt={name}
