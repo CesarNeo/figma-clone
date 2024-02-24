@@ -1,3 +1,5 @@
+import useCanvas from '@/hooks/canvas'
+
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 
@@ -6,14 +8,13 @@ const DIMENSIONS_OPTIONS = [
   { label: 'H', property: 'height' },
 ]
 
-type Props = {
-  width: string
-  height: string
-  isEditingRef: React.MutableRefObject<boolean>
-  handleInputChange: (property: string, value: string) => void
-}
+function Dimensions() {
+  const {
+    elementAttributes: { width, height },
+    isEditingRef,
+    onUpdateElementAttributes,
+  } = useCanvas()
 
-function Dimensions({ width, height, isEditingRef, handleInputChange }: Props) {
   return (
     <section className="border-primary-grey-200 flex flex-col border-b">
       <div className="flex flex-col gap-4 px-6 py-3">
@@ -22,19 +23,17 @@ function Dimensions({ width, height, isEditingRef, handleInputChange }: Props) {
             key={item.label}
             className="flex flex-1 items-center gap-3 rounded-sm"
           >
-            <Label htmlFor={item.property}>
-              {item.label}
-            </Label>
+            <Label htmlFor={item.property}>{item.label}</Label>
             <Input
               type="number"
               id={item.property}
               placeholder="100"
               value={item.property === 'width' ? width : height}
               min={10}
-              onChange={(e) => handleInputChange(item.property, e.target.value)}
-              onBlur={(e) => {
-                isEditingRef.current = false
-              }}
+              onChange={({ target: { value } }) =>
+                onUpdateElementAttributes(item.property, value)
+              }
+              onBlur={() => (isEditingRef.current = false)}
             />
           </div>
         ))}

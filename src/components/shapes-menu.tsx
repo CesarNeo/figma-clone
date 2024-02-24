@@ -1,69 +1,86 @@
 'use client'
 
-import Image from 'next/image'
+import { ChevronDown } from 'lucide-react'
+import { ChangeEvent } from 'react'
 
-import { ShapesMenuProps } from '@/types/type'
+import useCanvas from '@/hooks/canvas'
+import { NavElementMultipleValue } from '@/types'
 
 import { Button } from './ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 
-function ShapesMenu({
-  item,
-  activeElement,
-  handleActiveElement,
-  handleImageUpload,
-  imageInputRef,
-}: ShapesMenuProps) {
-  const isDropdownElem = item.value.some(
-    (elem) => elem?.value === activeElement.value,
+export type ShapesMenuProps = {
+  item: NavElementMultipleValue
+  isActive: boolean
+}
+
+function ShapesMenu({ item, isActive }: ShapesMenuProps) {
+  const { uploadImage, imageInputRef, onActiveElement, activeElement } =
+    useCanvas()
+
+  const shapes = item.value
+  const isDropdownShapeSelected = shapes.some(
+    (elem) => elem?.value === activeElement?.value,
   )
+  const ActiveShapeIcon = activeElement?.icon
+  const DefaultShapeIcon = item?.icon
+
+  function handleUploadImage(event: ChangeEvent<HTMLInputElement>) {
+    event.stopPropagation()
+
+    if (!event.target.files) return
+
+    const file = event.target.files[0]
+
+    uploadImage(file)
+  }
 
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild className="no-ring">
-          <button
+        <DropdownMenuTrigger asChild>
+          <Button
+            data-active={isActive}
             type="button"
-            className="relative h-5 w-5 object-contain px-4"
-            onClick={() => handleActiveElement(item)}
+            className="relative h-full gap-1 !ring-0 data-[active=true]:bg-primary"
+            variant="ghost"
+            onClick={() => onActiveElement(item)}
           >
-            <Image
-              src={isDropdownElem ? activeElement.icon : item.icon}
-              alt={item.name}
-              fill
-            />
-          </button>
+            {isDropdownShapeSelected ? (
+              <ActiveShapeIcon className="size-5" />
+            ) : (
+              <DefaultShapeIcon className="size-5" />
+            )}
+
+            <ChevronDown className="size-3" />
+          </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="mt-5 flex flex-col gap-y-1 border-none bg-primary-foreground py-4 text-white">
-          {item.value.map((elem) => (
-            <Button
-              key={elem?.name}
-              onClick={() => {
-                handleActiveElement(elem)
-              }}
-              variant="ghost"
-              className={`flex h-fit justify-between gap-10 rounded-none px-5 py-3 focus:border-none ${
-                activeElement.value === elem?.value
-                  ? 'bg-primary'
-                  : 'hover:bg-secondary'
-              }`}
-            >
-              <div className="group flex items-center gap-2">
-                <Image
-                  src={elem?.icon as string}
-                  alt={elem?.name as string}
-                  width={20}
-                  height={20}
-                />
-                <p className={`text-sm `}>{elem?.name}</p>
-              </div>
-            </Button>
-          ))}
+        <DropdownMenuContent>
+          {shapes &&
+            shapes.map(({ name, value, icon: Icon }) => (
+              <DropdownMenuItem
+                key={name}
+                onClick={() =>
+                  onActiveElement({
+                    name,
+                    value,
+                    icon: Icon,
+                  })
+                }
+                className="cursor-pointer py-4"
+              >
+                <div className="flex items-center gap-2">
+                  <Icon className="size-5" />
+                  <p className="text-sm">{name}</p>
+                </div>
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -72,7 +89,7 @@ function ShapesMenu({
         className="hidden"
         ref={imageInputRef}
         accept="image/*"
-        onChange={handleImageUpload}
+        onChange={handleUploadImage}
       />
     </>
   )

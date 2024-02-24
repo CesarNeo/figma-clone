@@ -1,37 +1,15 @@
-import { useRef } from 'react'
+'use client'
 
-import { modifyShape } from '@/lib/shapes'
-import { RightSidebarProps } from '@/types/type'
+import { useRef } from 'react'
 
 import Color from './settings/color'
 import Dimensions from './settings/dimensions'
 import Export from './settings/export'
 import Text from './settings/text'
 
-function RightSidebar({
-  activeObjectRef,
-  elementAttributes,
-  fabricRef,
-  isEditingRef,
-  setElementAttributes,
-  syncShapeInStorage,
-}: RightSidebarProps) {
+function RightSidebar() {
   const colorInputRef = useRef<HTMLInputElement>(null)
   const strokeInputRef = useRef<HTMLInputElement>(null)
-
-  function handleInputChange(property: string, value: string) {
-    if (!isEditingRef.current) isEditingRef.current = true
-
-    setElementAttributes((prev) => ({ ...prev, [property]: value }))
-
-    modifyShape({
-      canvas: fabricRef.current as fabric.Canvas,
-      property,
-      value,
-      activeObjectRef,
-      syncShapeInStorage,
-    })
-  }
 
   return (
     <section className="sticky right-0 flex h-full min-w-[14.1875rem] select-none flex-col border-t border-border bg-primary-foreground text-secondary-foreground max-sm:hidden">
@@ -40,31 +18,17 @@ function RightSidebar({
         Makes changes to canvas as you like
       </span>
 
-      <Dimensions
-        width={elementAttributes.width}
-        height={elementAttributes.height}
-        handleInputChange={handleInputChange}
-        isEditingRef={isEditingRef}
-      />
-      <Text
-        fontFamily={elementAttributes.fontFamily}
-        fontSize={elementAttributes.fontSize}
-        fontWeight={elementAttributes.fontWeight}
-        handleInputChange={handleInputChange}
-      />
+      <Dimensions />
+      <Text />
       <Color
         attributeType="fill"
         placeholder="color"
         inputRef={colorInputRef}
-        attribute={elementAttributes.fill}
-        handleInputChange={handleInputChange}
       />
       <Color
         attributeType="stroke"
         placeholder="stroke"
         inputRef={strokeInputRef}
-        attribute={elementAttributes.stroke}
-        handleInputChange={handleInputChange}
       />
       <Export />
     </section>

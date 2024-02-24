@@ -2,14 +2,15 @@
 
 import { PointerEvent, useCallback, useEffect, useState } from 'react'
 
-import { shortcuts } from '@/constants'
-import useInterval from '@/hooks/useInterval'
+import { SHORTCUTS } from '@/constants'
+import useCanvas from '@/hooks/canvas'
+import useInterval from '@/hooks/interval'
 import {
   useBroadcastEvent,
   useEventListener,
   useMyPresence,
 } from '@/liveblocks.config'
-import { CursorMode, CursorState, Reaction } from '@/types/type'
+import { CursorMode, CursorState, Reaction } from '@/types'
 
 import Comments from './comments/comments'
 import CursorChat from './cursors/cursor-chat'
@@ -23,13 +24,9 @@ import {
   ContextMenuTrigger,
 } from './ui/context-menu'
 
-interface LiveProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>
-  undo: () => void
-  redo: () => void
-}
+function Live() {
+  const { canvasRef, undo, redo } = useCanvas()
 
-function Live({ canvasRef, undo, redo }: LiveProps) {
   const [{ cursor }, setMyPresence] = useMyPresence()
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,
@@ -256,7 +253,7 @@ function Live({ canvasRef, undo, redo }: LiveProps) {
       </ContextMenuTrigger>
 
       <ContextMenuContent className="right-menu-content">
-        {shortcuts.map((shortcut) => (
+        {SHORTCUTS.map((shortcut) => (
           <ContextMenuItem
             key={shortcut.key}
             onClick={() => handleContextMenuShortcut(shortcut.name)}

@@ -20,13 +20,6 @@ function PinnedComposer({ onComposerSubmit, ...props }: Props) {
         />
       </div>
       <div className="flex min-w-96 flex-col overflow-hidden rounded-lg bg-white p-2 text-sm shadow">
-        {/**
-         * We're using the Composer component to create a new comment.
-         * Liveblocks provides a Composer component that allows to
-         * create/edit/delete comments.
-         *
-         * Composer: https://liveblocks.io/docs/api-reference/liveblocks-react-comments#Composer
-         */}
         <Composer
           onComposerSubmit={onComposerSubmit}
           autoFocus={true}
