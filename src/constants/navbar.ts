@@ -1,5 +1,4 @@
 import {
-  MessageCircle,
   MousePointer2,
   RectangleHorizontal,
   Trash,
@@ -36,11 +35,6 @@ export const NAV_ELEMENTS = [
     icon: Undo2,
     value: 'reset',
     name: 'Reset',
-  },
-  {
-    icon: MessageCircle,
-    value: 'comments',
-    name: 'Comments',
   },
 ] satisfies NavElement[]
 

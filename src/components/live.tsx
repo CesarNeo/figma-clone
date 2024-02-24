@@ -12,7 +12,6 @@ import {
 } from '@/liveblocks.config'
 import { CursorMode, CursorState, Reaction } from '@/types'
 
-import Comments from './comments/comments'
 import CursorChat from './cursors/cursor-chat'
 import LiveCursors from './cursors/live-cursors'
 import FlyingReaction from './reaction/flying-reaction'
@@ -26,6 +25,8 @@ import {
 
 function Live() {
   const { canvasRef, undo, redo } = useCanvas()
+
+  console.log('aqui')
 
   const [{ cursor }, setMyPresence] = useMyPresence()
   const [cursorState, setCursorState] = useState<CursorState>({
@@ -248,8 +249,6 @@ function Live() {
         )}
 
         <LiveCursors />
-
-        <Comments />
       </ContextMenuTrigger>
 
       <ContextMenuContent className="right-menu-content">

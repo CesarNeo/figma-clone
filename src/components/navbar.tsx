@@ -6,7 +6,6 @@ import { NAV_ELEMENTS } from '@/constants'
 import useCanvas from '@/hooks/canvas'
 import { NavElement, NavElementMultipleValue } from '@/types'
 
-import NewThread from './comments/new-thread'
 import ShapesMenu from './shapes-menu'
 import { Button } from './ui/button'
 import ActiveUsers from './users/active-users'
@@ -46,17 +45,6 @@ function Navbar() {
                   item={item as NavElementMultipleValue}
                   isActive={isActive(item.value)}
                 />
-              ) : item?.value === 'comments' ? (
-                <NewThread>
-                  <Button
-                    data-active={isActive(item.value)}
-                    type="button"
-                    className="relative h-full ring-0 data-[active=true]:bg-primary"
-                    variant="ghost"
-                  >
-                    <Icon className="size-5" />
-                  </Button>
-                </NewThread>
               ) : (
                 <Button
                   data-active={isActive(item.value as string)}
