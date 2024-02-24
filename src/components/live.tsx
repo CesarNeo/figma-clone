@@ -2,15 +2,15 @@
 
 import { PointerEvent, useCallback, useEffect, useState } from 'react'
 
-import { shortcuts } from '@/constants'
+import { SHORTCUTS } from '@/constants'
 import useCanvas from '@/hooks/canvas'
-import useInterval from '@/hooks/useInterval'
+import useInterval from '@/hooks/interval'
 import {
   useBroadcastEvent,
   useEventListener,
   useMyPresence,
 } from '@/liveblocks.config'
-import { CursorMode, CursorState, Reaction } from '@/types/type'
+import { CursorMode, CursorState, Reaction } from '@/types'
 
 import Comments from './comments/comments'
 import CursorChat from './cursors/cursor-chat'
@@ -253,7 +253,7 @@ function Live() {
       </ContextMenuTrigger>
 
       <ContextMenuContent className="right-menu-content">
-        {shortcuts.map((shortcut) => (
+        {SHORTCUTS.map((shortcut) => (
           <ContextMenuItem
             key={shortcut.key}
             onClick={() => handleContextMenuShortcut(shortcut.name)}

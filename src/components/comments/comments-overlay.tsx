@@ -3,7 +3,7 @@
 import { ThreadData } from '@liveblocks/client'
 import { useCallback, useRef } from 'react'
 
-import { useMaxZIndex } from '@/lib/useMaxZIndex'
+import { useMaxZIndex } from '@/hooks/max-z-index'
 import {
   ThreadMetadata,
   useEditThreadMetadata,
@@ -11,7 +11,7 @@ import {
   useUser,
 } from '@/liveblocks.config'
 
-import { PinnedThread } from './pinned-thread'
+import PinnedThread from './pinned-thread'
 
 type OverlayThreadProps = {
   thread: ThreadData<ThreadMetadata>
@@ -54,7 +54,7 @@ function OverlayThread({ thread, maxZIndex }: OverlayThreadProps) {
         zIndex: maxZIndex + 1,
       },
     })
-  }, [])
+  }, [editThreadMetadata, maxZIndex, thread.id, thread.metadata.zIndex])
 
   if (isLoading) return null
 

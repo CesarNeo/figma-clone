@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export enum CursorMode {
   Hidden,
   Chat,
@@ -22,40 +23,6 @@ export type CursorState =
       reaction: string
       isPressed: boolean
     }
-
-export type Reaction = {
-  value: string
-  timestamp: number
-  point: { x: number; y: number }
-}
-
-export type ReactionEvent = {
-  x: number
-  y: number
-  value: string
-}
-
-export type Attributes = {
-  width: string
-  height: string
-  fontSize: string
-  fontFamily: string
-  fontWeight: string
-  fill: string
-  stroke: string
-}
-
-export type ActiveElement = {
-  name: string
-  value: string
-  icon: string
-} | null
-
-export type ElementDirection = {
-  canvas: fabric.Canvas
-  direction: string
-  syncShapeInStorage: (shape: fabric.Object) => void
-}
 
 export type CursorChatProps = {
   cursor: { x: number; y: number }

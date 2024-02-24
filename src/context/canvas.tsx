@@ -13,8 +13,8 @@ import {
 
 import { DEFAULT_NAV_ELEMENT } from '@/constants'
 import {
-  handleCanvaseMouseMove,
   handleCanvasMouseDown,
+  handleCanvasMouseMove,
   handleCanvasMouseUp,
   handleCanvasObjectModified,
   handleCanvasObjectScaling,
@@ -26,8 +26,12 @@ import {
 } from '@/lib/canvas'
 import { handleDelete, handleKeyDown } from '@/lib/key-events'
 import { useMutation, useRedo, useStorage, useUndo } from '@/liveblocks.config'
-import { FabricObjectProperties, NavElement } from '@/types'
-import { Attributes } from '@/types/type'
+import {
+  Attributes,
+  CanvasMouseMove,
+  FabricObjectProperties,
+  NavElement,
+} from '@/types'
 import { modifyShape } from '@/utils'
 
 interface CustomFabricImage extends fabric.Image {
@@ -74,7 +78,12 @@ function CanvasProvider({ children }: { children: ReactNode }) {
 
   const fabricRef = useRef<fabric.Canvas | null>(null)
   const shapeRef = useRef<fabric.Object | null>(null)
-  const activeObjectRef = useRef<fabric.Object | null>(null)
+  const activeObjectRef = useRef<
+    | (fabric.Object & {
+        objectId: string
+      })
+    | null
+  >(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const imageInputRef = useRef<HTMLInputElement | null>(null)
   const selectedShapeRef = useRef<string | null>(null)
@@ -118,60 +127,66 @@ function CanvasProvider({ children }: { children: ReactNode }) {
     return canvasObjects.size === 0
   }, [])
 
-  const uploadImage = useCallback((file: File) => {
-    const reader = new FileReader()
+  const uploadImage = useCallback(
+    (file: File) => {
+      const reader = new FileReader()
 
-    reader.onload = () => {
-      fabric.Image.fromURL(
-        reader.result as string,
-        (img: CustomFabricImage) => {
-          if (!fabricRef.current) return
+      reader.onload = () => {
+        fabric.Image.fromURL(
+          reader.result as string,
+          (img: CustomFabricImage) => {
+            if (!fabricRef.current) return
 
-          img.scaleToWidth(200)
-          img.scaleToHeight(200)
+            img.scaleToWidth(200)
+            img.scaleToHeight(200)
 
-          fabricRef.current.add(img)
+            fabricRef.current.add(img)
 
-          img.objectId = crypto.randomUUID()
+            img.objectId = crypto.randomUUID()
 
-          shapeRef.current = img
+            shapeRef.current = img
 
-          onSyncShapeInStorage(img)
-          fabricRef.current.requestRenderAll()
-        },
-      )
-    }
+            onSyncShapeInStorage(img)
+            fabricRef.current.requestRenderAll()
+          },
+        )
+      }
 
-    reader.readAsDataURL(file)
-  }, [])
+      reader.readAsDataURL(file)
+    },
+    [onSyncShapeInStorage],
+  )
 
-  const onActiveElement = useCallback((element: NavElement) => {
-    setActiveElement(element)
+  const onActiveElement = useCallback(
+    (element: NavElement) => {
+      setActiveElement(element)
 
-    switch (element.value) {
-      case 'reset':
-        deleteAllShapes()
-        fabricRef.current?.clear()
-        setActiveElement(DEFAULT_NAV_ELEMENT)
-        break
-      case 'delete':
-        handleDelete(fabricRef.current!, deleteShapeFromStorage)
-        setActiveElement(DEFAULT_NAV_ELEMENT)
-        break
-      case 'image':
-        imageInputRef.current?.click()
-        isDrawingRef.current = false
+      switch (element.value) {
+        case 'reset':
+          deleteAllShapes()
+          fabricRef.current?.clear()
+          setActiveElement(DEFAULT_NAV_ELEMENT)
+          break
+        case 'delete':
+          handleDelete(fabricRef.current!, deleteShapeFromStorage)
+          setActiveElement(DEFAULT_NAV_ELEMENT)
+          break
+        case 'image':
+          imageInputRef.current?.click()
+          isDrawingRef.current = false
 
-        if (fabricRef.current) {
-          fabricRef.current.isDrawingMode = false
-        }
-        break
-      default:
-        break
-    }
+          if (fabricRef.current) {
+            fabricRef.current.isDrawingMode = false
+          }
+          break
+        default:
+          break
+      }
 
-    selectedShapeRef.current = (element?.value as string) || null
-  }, [])
+      selectedShapeRef.current = (element?.value as string) || null
+    },
+    [deleteAllShapes, deleteShapeFromStorage],
+  )
 
   const onUpdateElementAttributes = useCallback(
     (property: string, value: string) => {
@@ -188,7 +203,7 @@ function CanvasProvider({ children }: { children: ReactNode }) {
         syncShapeInStorage: onSyncShapeInStorage,
       })
     },
-    [],
+    [onSyncShapeInStorage],
   )
 
   useEffect(() => {
@@ -206,12 +221,12 @@ function CanvasProvider({ children }: { children: ReactNode }) {
     })
 
     canvas.on('mouse:move', (options) => {
-      handleCanvaseMouseMove({
+      handleCanvasMouseMove({
         canvas,
         isDrawing: isDrawingRef,
         options,
         selectedShapeRef,
-        shapeRef,
+        shapeRef: shapeRef as CanvasMouseMove['shapeRef'],
         syncShapeInStorage: onSyncShapeInStorage,
       })
     })
@@ -264,7 +279,7 @@ function CanvasProvider({ children }: { children: ReactNode }) {
     window.addEventListener('keydown', (event) => {
       handleKeyDown({
         e: event,
-        canvas: currentFabricRef,
+        canvas: currentFabricRef!,
         undo,
         redo,
         syncShapeInStorage: onSyncShapeInStorage,
@@ -285,7 +300,7 @@ function CanvasProvider({ children }: { children: ReactNode }) {
       canvas.off('path:created')
       canvas.dispose()
     }
-  }, [])
+  }, [deleteShapeFromStorage, onSyncShapeInStorage, redo, undo])
 
   useEffect(() => {
     renderCanvas({

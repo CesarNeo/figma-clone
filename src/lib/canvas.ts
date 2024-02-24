@@ -1,4 +1,6 @@
 import { fabric } from 'fabric'
+import JSpdf from 'jspdf'
+import { MutableRefObject } from 'react'
 
 import { DEFAULT_NAV_ELEMENT } from '@/constants'
 import {
@@ -10,15 +12,15 @@ import {
   CanvasPathCreated,
   CanvasSelectionCreated,
   RenderCanvas,
-} from '@/types/type'
+} from '@/types'
 import { createSpecificShape } from '@/utils'
 
 export const initializeFabric = ({
   fabricRef,
   canvasRef,
 }: {
-  fabricRef: React.MutableRefObject<fabric.Canvas | null>
-  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
+  fabricRef: MutableRefObject<fabric.Canvas | null>
+  canvasRef: MutableRefObject<HTMLCanvasElement | null>
 }) => {
   const canvasElement = document.getElementById('canvas')
 
@@ -77,7 +79,7 @@ export const handleCanvasMouseDown = ({
   }
 }
 
-export const handleCanvaseMouseMove = ({
+export const handleCanvasMouseMove = ({
   options,
   canvas,
   isDrawing,
@@ -101,7 +103,7 @@ export const handleCanvaseMouseMove = ({
       break
 
     case 'circle':
-      shapeRef.current.set({
+      shapeRef.current?.set({
         radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
       })
       break
@@ -148,6 +150,7 @@ export const handleCanvasMouseUp = ({
 }: CanvasMouseUp) => {
   isDrawing.current = false
   if (selectedShapeRef.current === 'freeform') return
+  if (!shapeRef.current) return
 
   syncShapeInStorage(shapeRef.current)
 
@@ -335,4 +338,20 @@ export const handleCanvasZoom = ({
 
   options.e.preventDefault()
   options.e.stopPropagation()
+}
+
+export const exportToPdf = () => {
+  const canvas = document.querySelector('canvas')
+
+  if (!canvas) return
+
+  const doc = new JSpdf({
+    orientation: 'landscape',
+    unit: 'px',
+    format: [canvas.width, canvas.height],
+  })
+
+  const data = canvas.toDataURL()
+  doc.addImage(data, 'PNG', 0, 0, canvas.width, canvas.height)
+  doc.save('canvas.pdf')
 }

@@ -1,6 +1,6 @@
 import { ChangeEvent, KeyboardEvent as KeyboardEventReact } from 'react'
 
-import { CursorChatProps, CursorMode } from '@/types/type'
+import { CursorChatProps, CursorMode } from '@/types'
 
 import CursorSVG from './cursor-svg'
 
@@ -20,6 +20,7 @@ function CursorChat({
       message: newMessage,
     })
   }
+
   function handleKeyDown(event: KeyboardEventReact<HTMLInputElement>) {
     if (event.key === 'Enter') {
       onCursorStateChange({

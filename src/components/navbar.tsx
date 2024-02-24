@@ -2,8 +2,9 @@
 
 import Image from 'next/image'
 
-import { NAV_ELEMENTS, NavElement, NavElementMultipleValue } from '@/constants'
+import { NAV_ELEMENTS } from '@/constants'
 import useCanvas from '@/hooks/canvas'
+import { NavElement, NavElementMultipleValue } from '@/types'
 
 import NewThread from './comments/new-thread'
 import ShapesMenu from './shapes-menu'

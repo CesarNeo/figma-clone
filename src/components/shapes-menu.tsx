@@ -3,8 +3,8 @@
 import { ChevronDown } from 'lucide-react'
 import { ChangeEvent } from 'react'
 
-import { NavElementMultipleValue } from '@/constants'
 import useCanvas from '@/hooks/canvas'
+import { NavElementMultipleValue } from '@/types'
 
 import { Button } from './ui/button'
 import {

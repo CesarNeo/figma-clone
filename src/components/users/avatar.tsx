@@ -1,9 +1,7 @@
 import Image from 'next/image'
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import { cn } from '@/lib/utils'
-
-import styles from './avatar.module.css'
 
 export function Avatar({
   name,
@@ -12,17 +10,23 @@ export function Avatar({
   name: string
   className?: string
 }) {
-  const randomAvatar = Math.floor(Math.random() * 30)
+  const avatar = useMemo(
+    () =>
+      `https://liveblocks.io/avatars/avatar-${Math.floor(
+        Math.random() * 30,
+      )}.png`,
+    [],
+  )
 
   return (
     <div
-      className={cn(`${styles.avatar} relative h-9 w-9`, className)}
+      className={cn('avatar relative h-9 w-9', className)}
       data-tooltip={name}
     >
       <Image
-        src={`https://liveblocks.io/avatars/avatar-${randomAvatar}.png`}
+        src={avatar}
         fill
-        className={styles.avatar_picture}
+        className="h-full w-full rounded-full"
         alt={name}
       />
     </div>

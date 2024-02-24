@@ -1,7 +1,7 @@
 'use client'
 
-import { ShapeTypes } from '@/constants'
 import useCanvas from '@/hooks/canvas'
+import { ShapeTypes } from '@/types'
 import { getShapeInfo } from '@/utils'
 
 function LeftSidebar() {

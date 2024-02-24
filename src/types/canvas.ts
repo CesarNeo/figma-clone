@@ -1,7 +1,8 @@
 import { Json, JsonArray } from '@liveblocks/client'
-import { MutableRefObject } from 'react'
+import { fabric } from 'fabric'
+import { MutableRefObject, SetStateAction } from 'react'
 
-import { NavElement } from '.'
+import { Attributes, NavElement } from '.'
 
 export type FabricObjectProperties = {
   angle: number
@@ -56,6 +57,10 @@ export type FabricObjectProperties = {
   width: number
 }
 
+export type CustomFabricObject = fabric.Object & {
+  objectId?: string
+}
+
 export type CanvasMouseUp = {
   canvas: fabric.Canvas
   isDrawing: MutableRefObject<boolean>
@@ -79,12 +84,15 @@ export type CanvasMouseMove = {
   canvas: fabric.Canvas
   isDrawing: MutableRefObject<boolean>
   selectedShapeRef: MutableRefObject<string | null>
-  shapeRef: MutableRefObject<fabric.Object | null>
+  shapeRef: MutableRefObject<
+    | (CustomFabricObject & {
+        x2: number
+        y2: number
+        radius: number
+      })
+    | null
+  >
   syncShapeInStorage: (shape: fabric.Object) => void
-}
-
-export type CustomFabricObject = fabric.Object & {
-  objectId?: string
 }
 
 export type ModifyShape = {
@@ -96,25 +104,30 @@ export type ModifyShape = {
 }
 
 export type CanvasPathCreated = {
-  options: (fabric.IEvent & { path: CustomFabricObject }) | unknown
+  options: fabric.IEvent & { path?: CustomFabricObject }
   syncShapeInStorage: (shape: fabric.Object) => void
 }
 
 export type CanvasObjectScaling = {
   options: fabric.IEvent
-  setElementAttributes: (property: string, value: string) => void
+  setElementAttributes: (value: SetStateAction<Attributes>) => void
 }
 
 export type CanvasSelectionCreated = {
   options: fabric.IEvent
   isEditingRef: MutableRefObject<boolean>
-  setElementAttributes: (property: string, value: string) => void
+  setElementAttributes: (value: SetStateAction<Attributes>) => void
 }
 
 export type RenderCanvas = {
   fabricRef: MutableRefObject<fabric.Canvas | null>
   canvasObjects: Storage['canvasObjects']
-  activeObjectRef: MutableRefObject<fabric.Object | null>
+  activeObjectRef: MutableRefObject<
+    | (fabric.Object & {
+        objectId: string
+      })
+    | null
+  >
 }
 
 export type CanvasObjectModified = {

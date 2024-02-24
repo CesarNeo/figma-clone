@@ -3,7 +3,7 @@ import { ICircleOptions } from 'fabric/fabric-impl'
 import { RectangleHorizontal } from 'lucide-react'
 
 import { SHAPE_TYPES } from '@/constants'
-import { CustomFabricObject, ModifyShape } from '@/types'
+import { CustomFabricObject, ElementDirection, ModifyShape } from '@/types'
 
 export function getShapeInfo(shapeType: keyof typeof SHAPE_TYPES) {
   return (
@@ -26,7 +26,10 @@ export function createShape(
   return createSpecificShape(shapeType, pointer)
 }
 
-export function createSpecificShape(shapeType: string, pointer: PointerEvent) {
+export function createSpecificShape(
+  shapeType: string | null,
+  pointer: PointerEvent,
+) {
   switch (shapeType) {
     case 'rectangle':
       return createRectangle(pointer)
@@ -125,4 +128,24 @@ export function createRectangle(pointer: PointerEvent) {
   } as CustomFabricObject)
 
   return rect
+}
+
+export function bringElement({
+  canvas,
+  direction,
+  syncShapeInStorage,
+}: ElementDirection) {
+  if (!canvas) return
+
+  const selectedElement = canvas.getActiveObject()
+
+  if (!selectedElement || selectedElement?.type === 'activeSelection') return
+
+  if (direction === 'front') {
+    canvas.bringToFront(selectedElement)
+  } else if (direction === 'back') {
+    canvas.sendToBack(selectedElement)
+  }
+
+  syncShapeInStorage(selectedElement)
 }
